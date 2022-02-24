@@ -28,10 +28,10 @@ const init = async () => {
   ul.innerHTML = html;
   console.log(guitarists)
   const options = guitarists.map(guitarist => {
-    return `<options> ${guitarist.style} </options>`
+    return `<select><option> ${guitarist.style} </option><select>`
   }).join('');
   console.log(options)
-  option.innerHTML = options
+  select.innerHTML = options
 };
 
 init();
