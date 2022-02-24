@@ -8,11 +8,14 @@ ul.addEventListener("click", async (ev) => {
 });
 
 const button = document.querySelector("button");
-button.addEventListener("click", async(ev) => {
+button.addEventListener("click", (ev) => {
   if(ev.target.tagName === "BUTTON") {
-    
+    console.log('hello world');
+    init()
   }
 })
+
+
 
 const select = document.querySelector("select");
 const option = document.querySelector('option')

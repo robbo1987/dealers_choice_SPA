@@ -24,6 +24,7 @@ const port = process.env.port || 3000;
 const path = require("path");
 
 app.use("/src", express.static(path.join(__dirname, "src")));
+app.use(express.urlencoded({ extended:false}))
 app.get("/", (req, res, next) =>
   res.sendFile(path.join(__dirname, "index.html"))
 );
@@ -48,6 +49,16 @@ app.delete('/api/guitarists/:id', async (req, res, next) => {
   }
 });
 
+  
+app.post("/", async (req, res, next) => {
+  try { const guitarist = await Guitarist.create(req.body)
+        res.send(guitarist)
+    
+  } catch (ex) {
+    next(ex);
+  }
+})
+
 const init = async () => {
   try {
     console.log("data is seeded");
@@ -68,61 +79,3 @@ const init = async () => {
 init();
 
 
-/*
-
-  Router.get("/", async (req, res, next) => {
-    try {
-      const employees = await Employee.findAll({
-        include: [Category, { model: Employee, as: "boss" }],
-      });
-  
-      const categories = await Category.findAll();
-      const options = categories
-        .map((category) => {
-          return `
-        <option value='${category.id}'>
-        ${category.name}
-        </option>
-        `;
-        })
-        .join("");
-      const html = employees
-        .map((employee) => {
-          const boss = employee.boss;
-          let bossName = "NO BOSS";
-          if (boss) {
-            bossName = boss.name;
-          }
-          return `<div>
-                          Employee Name: ${employee.name} -- Employee Department: ${employee.category.name} -- Name of Boss: ${bossName}
-                          <a href = '/employees/${employee.id}'> employee page </a>
-                          <a href = 'categories/${employee.categoryId}'> category page </a>
-                      </div>
-                `;
-        })
-        .join("");
-      res.send(`
-      <html>
-          <head>
-            <title> Robbys' Corporation </title>
-          </head>
-          <body>
-            <h1> Robby's Corporation </h1>
-            <form Method = "POST">
-            <input name='name' placeholder = "employee name">
-            <select name="categoryId">
-            ${options}
-            </select>
-            <button> CREATE NEW EMPLOYEE</button>
-            </form>
-            <div> ${html} </div>
-           
-          </body>
-      </html>
-      
-      `);
-    } catch (ex) {
-      next(ex);
-    }
-  });
-*/
