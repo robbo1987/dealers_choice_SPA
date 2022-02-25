@@ -16,20 +16,29 @@ const Guitarist = sequelize.define("guitarists", {
   style: {
     type: Sequelize.ENUM("jazz", "rock", "metal", "flamenco"),
   },
+  nickname: {
+    type: Sequelize.DataTypes.VIRTUAL,
+    get() {
+      return this.name.toUpperCase();
+    },
+  },
 });
+
+Guitarist.findAllRock = function () {
+  return this.findAll({ where: { style: "rock" } });
+};
 
 const express = require("express");
 const app = express();
 const port = process.env.port || 3000;
 const path = require("path");
+const { Console } = require("console");
 
 app.use("/src", express.static(path.join(__dirname, "src")));
-app.use(express.urlencoded({ extended:false}))
+app.use(express.urlencoded({ extended: false }));
 app.get("/", (req, res, next) =>
   res.sendFile(path.join(__dirname, "index.html"))
 );
-
-
 
 app.get("/api/guitarists", async (req, res, next) => {
   try {
@@ -39,7 +48,7 @@ app.get("/api/guitarists", async (req, res, next) => {
   }
 });
 
-app.delete('/api/guitarists/:id', async (req, res, next) => {
+app.delete("/api/guitarists/:id", async (req, res, next) => {
   try {
     const guitarist = await Guitarist.findByPk(req.params.id);
     await guitarist.destroy();
@@ -49,15 +58,24 @@ app.delete('/api/guitarists/:id', async (req, res, next) => {
   }
 });
 
-  
 app.post("/", async (req, res, next) => {
-  try { const guitarist = await Guitarist.create(req.body)
-        res.send(guitarist)
-    
+  try {
+    console.log(req.body)
+    const guitarist = await Guitarist.create(req.body);
+    console.log(req.body)
+    res.redirect("/");
   } catch (ex) {
     next(ex);
   }
-})
+});
+
+app.get("/classTest", async (req, res, next) => {
+  try {
+    res.send( await Guitarist.findAllRock());
+  } catch (ex) {
+    next(ex);
+  }
+});
 
 const init = async () => {
   try {
@@ -77,5 +95,3 @@ const init = async () => {
 };
 
 init();
-
-
